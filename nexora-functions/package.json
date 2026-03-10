@@ -1,0 +1,20 @@
+{
+  "name": "nexora-functions",
+  "version": "1.0.0",
+  "description": "Nexora Cloud Functions — Starter Kit",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "jest --coverage",
+    "lint": "eslint src/"
+  },
+  "dependencies": {
+    "@google-cloud/functions-framework": "^3.3.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

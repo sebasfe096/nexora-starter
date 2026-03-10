@@ -1,0 +1,23 @@
+# Node
+node_modules/
+dist/
+.env
+.env.local
+*.log
+
+# Angular
+nexora-admin-ui/.angular/
+nexora-admin-ui/dist/
+
+# React
+nexora-inventory-ui/dist/
+
+# Java
+nexora-api/target/
+nexora-api/*.iml
+.idea/
+*.class
+
+# OS
+.DS_Store
+Thumbs.db
