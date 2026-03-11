@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { ApiResponse, PaginatedResponse } from '../../../core/models/api-response.model';
 
 export interface OrderItem {
   productId: number;
@@ -26,30 +25,30 @@ export class OrderService {
 
   constructor(private http: HttpClient) {}
 
-  getOrders(): Observable<PaginatedResponse<Order>> {
-    return this.http.get<PaginatedResponse<Order>>(this.BASE_URL);
+  getOrders(): Observable<Order[]> {
+    return this.http.get<Order[]>(this.BASE_URL);
   }
 
-  getOrderById(id: number): Observable<ApiResponse<Order>> {
-    return this.http.get<ApiResponse<Order>>(`${this.BASE_URL}/${id}`);
+  getOrderById(id: number): Observable<Order> {
+    return this.http.get<Order>(`${this.BASE_URL}/${id}`);
   }
 
-  createOrder(order: Partial<Order>): Observable<ApiResponse<Order>> {
-    return this.http.post<ApiResponse<Order>>(this.BASE_URL, order);
+  createOrder(order: Partial<Order>): Observable<Order> {
+    return this.http.post<Order>(this.BASE_URL, order);
   }
 
-  updateOrderStatus(id: number, status: Order['status']): Observable<ApiResponse<Order>> {
-    return this.http.patch<ApiResponse<Order>>(`${this.BASE_URL}/${id}/status`, { status });
+  updateOrderStatus(id: number, status: Order['status']): Observable<Order> {
+    return this.http.patch<Order>(`${this.BASE_URL}/${id}/status`, { status });
   }
 
-  getOrdersByCustomer(customerId: number): Observable<ApiResponse<Order[]>> {
-    return this.http.get<ApiResponse<Order[]>>(
+  getOrdersByCustomer(customerId: number): Observable<Order[]> {
+    return this.http.get<Order[]>(
       `${this.CUSTOMER_URL}/${customerId}/orders`
     );
   }
 
-  cancelOrder(id: number, reason: string): Observable<ApiResponse<Order>> {
-    return this.http.post<ApiResponse<Order>>(
+  cancelOrder(id: number, reason: string): Observable<Order> {
+    return this.http.post<Order>(
       `${this.BASE_URL}/${id}/cancel`,
       { reason }
     );

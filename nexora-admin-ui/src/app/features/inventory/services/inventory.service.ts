@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { ApiResponse } from '../../../core/models/api-response.model';
 
 export interface InventoryMovement {
   id: number;
@@ -28,17 +27,17 @@ export class InventoryService {
 
   constructor(private http: HttpClient) {}
 
-  getStockLevels(): Observable<ApiResponse<StockLevel[]>> {
-    return this.http.get<ApiResponse<StockLevel[]>>(`${this.BASE_URL}/stock-levels`);
+  getStockLevels(): Observable<StockLevel[]> {
+    return this.http.get<StockLevel[]>(`${this.BASE_URL}/stock-levels`);
   }
 
-  getMovements(productId: number): Observable<ApiResponse<InventoryMovement[]>> {
-    return this.http.get<ApiResponse<InventoryMovement[]>>(
+  getMovements(productId: number): Observable<InventoryMovement[]> {
+    return this.http.get<InventoryMovement[]>(
       `${this.BASE_URL}/movements?productId=${productId}`
     );
   }
 
-  getLowStockReport(): Observable<ApiResponse<StockLevel[]>> {
-    return this.http.get<ApiResponse<StockLevel[]>>(`${this.REPORTS_URL}/low-stock`);
+  getLowStockReport(): Observable<StockLevel[]> {
+    return this.http.get<StockLevel[]>(`${this.REPORTS_URL}/low-stock`);
   }
 }

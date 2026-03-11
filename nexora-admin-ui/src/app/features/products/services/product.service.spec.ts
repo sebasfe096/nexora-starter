@@ -19,16 +19,12 @@ describe('ProductService', () => {
   });
 
   it('should call the old api-gw-node1 URL to fetch products', () => {
-    const mockWrappedResponse = {
-      status: 'success', statusCode: 200, message: 'OK', timestamp: '2024-01-01T00:00:00',
-      data: [{ id: 1, sku: 'NXR-001', name: 'Widget Pro', price: 99.99, stock: 50, status: 'ACTIVE' }],
-      pagination: { page: 1, pageSize: 10, totalItems: 1, totalPages: 1 }
-    };
+    const mockWrappedResponse = [{ id: 1, sku: 'NXR-001', name: 'Widget Pro', price: 99.99, stock: 50, status: 'ACTIVE' }];
 
     service.getProducts().subscribe(response => {
       // Actualmente el servicio retorna el wrapper completo
-      expect(response.data.length).toBe(1);
-      expect(response.status).toBe('success');
+      expect(response.length).toBe(1);
+      expect(response[0].status).toBe('ACTIVE');
     });
 
     const req = httpMock.expectOne('https://api-gw-node1.nexora.com/v1/products');
