@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import {environment} from "../../../../environments/environment";
 
 export interface OrderItem {
   productId: number;
@@ -20,25 +21,25 @@ export interface Order {
 
 @Injectable({ providedIn: 'root' })
 export class OrderService {
-  private readonly BASE_URL     = 'https://api-gw-node2.nexora.com/v1/orders';
-  private readonly CUSTOMER_URL = 'https://api-gw-node3.nexora.com/v1/customers';
+  private readonly ORDER_URL = `${environment.API_DOMAIN}${environment.API_CONTEXT}${environment.SERVICES.ORDERS}`;
+  private readonly CUSTOMER_URL = `${environment.API_DOMAIN}${environment.API_CONTEXT}${environment.SERVICES.CUSTOMERS}`;
 
   constructor(private http: HttpClient) {}
 
   getOrders(): Observable<Order[]> {
-    return this.http.get<Order[]>(this.BASE_URL);
+    return this.http.get<Order[]>(this.ORDER_URL);
   }
 
   getOrderById(id: number): Observable<Order> {
-    return this.http.get<Order>(`${this.BASE_URL}/${id}`);
+    return this.http.get<Order>(`${this.ORDER_URL}/${id}`);
   }
 
   createOrder(order: Partial<Order>): Observable<Order> {
-    return this.http.post<Order>(this.BASE_URL, order);
+    return this.http.post<Order>(this.ORDER_URL, order);
   }
 
   updateOrderStatus(id: number, status: Order['status']): Observable<Order> {
-    return this.http.patch<Order>(`${this.BASE_URL}/${id}/status`, { status });
+    return this.http.patch<Order>(`${this.ORDER_URL}/${id}/status`, { status });
   }
 
   getOrdersByCustomer(customerId: number): Observable<Order[]> {
@@ -49,7 +50,7 @@ export class OrderService {
 
   cancelOrder(id: number, reason: string): Observable<Order> {
     return this.http.post<Order>(
-      `${this.BASE_URL}/${id}/cancel`,
+      `${this.ORDER_URL}/${id}/cancel`,
       { reason }
     );
   }

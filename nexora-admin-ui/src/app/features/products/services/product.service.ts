@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import {environment} from "../../../../environments/environment";
 
 export interface Product {
   id: number;
@@ -16,25 +17,25 @@ export interface Product {
 
 @Injectable({ providedIn: 'root' })
 export class ProductService {
-  private readonly BASE_URL      = 'https://api-gw-node1.nexora.com/v1/products';
-  private readonly INVENTORY_URL = 'https://api-gw-node2.nexora.com/v1/inventory';
+  private readonly PRODUCT_URL = `${environment.API_DOMAIN}${environment.API_CONTEXT}${environment.SERVICES.PRODUCTS}`;
+  private readonly INVENTORY_URL = `${environment.API_DOMAIN}${environment.API_CONTEXT}${environment.SERVICES.INVENTORY}`;
 
   constructor(private http: HttpClient) {}
 
   getProducts(): Observable<Product[]> {
-    return this.http.get<Product[]>(this.BASE_URL);
+    return this.http.get<Product[]>(this.PRODUCT_URL);
   }
 
   getProductById(id: number): Observable<Product> {
-    return this.http.get<Product>(`${this.BASE_URL}/${id}`);
+    return this.http.get<Product>(`${this.PRODUCT_URL}/${id}`);
   }
 
   createProduct(product: Partial<Product>): Observable<Product> {
-    return this.http.post<Product>(this.BASE_URL, product);
+    return this.http.post<Product>(this.PRODUCT_URL, product);
   }
 
   updateProduct(id: number, data: Partial<Product>): Observable<Product> {
-    return this.http.put<Product>(`${this.BASE_URL}/${id}`, data);
+    return this.http.put<Product>(`${this.PRODUCT_URL}/${id}`, data);
   }
 
   updateStock(productId: number, quantity: number): Observable<void> {
@@ -46,7 +47,7 @@ export class ProductService {
 
   deactivateProduct(id: number): Observable<Product> {
     return this.http.patch<Product>(
-      `${this.BASE_URL}/${id}/status`,
+      `${this.PRODUCT_URL}/${id}/status`,
       { status: 'INACTIVE' }
     );
   }
