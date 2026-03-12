@@ -4,7 +4,7 @@
   "description": "Nexora Cloud Functions — Starter Kit",
   "main": "src/index.js",
   "scripts": {
-    "start": "node src/index.js",
+    "start": "functions-framework --target=onInventorySync --source=src/index.js",
     "test": "jest --coverage",
     "lint": "eslint src/"
   },

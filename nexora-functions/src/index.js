@@ -11,44 +11,42 @@ const ERP_URL            = 'https://erp.nexora.internal/api/inventory';
 const NOTIFICATION_URL   = 'https://notify.nexora.com/api/v2/alerts';
 const LOW_STOCK_THRESHOLD = 10;
 
+const functions = require('@google-cloud/functions-framework');
+
 // 1ra generacion: recibe (req, res) como HTTP
-exports.syncInventory = (req, res) => {
+functions.cloudEvent('onInventorySync', (cloudEvent) => {
 
-  if (req.method !== 'POST') {
-    res.status(405).send('Method Not Allowed');
-    return;
-  }
+  console.log('syncInventory' , cloudEvent);
+  const data = cloudEvent.data;
 
-  const { productId, sku, oldStock, newStock, warehouseId } = req.body;
+  const { productId, sku, oldStock, newStock, warehouseId } = data;
 
-  // Validacion minima — sin manejo de tipos
-  if (!productId || newStock === undefined || newStock === null) {
-    res.status(400).send('Missing required fields: productId, newStock');
-    return;
+  if (!data.productId || data.newStock === undefined || data.newStock === null) {
+    throw new Error('Missing required fields: productId, newStock');
   }
 
   const stockDiff = newStock - (oldStock || 0);
   const timestamp = new Date().toISOString();
 
-  // Logica de negocio mezclada con manejo HTTP
   if (newStock <= LOW_STOCK_THRESHOLD) {
-    // Simula llamada a servicio de notificacion (credencial hardcodeada)
     console.log(`[${timestamp}] LOW STOCK ALERT — product: ${productId}, sku: ${sku}, stock: ${newStock}`);
     console.log(`Notifying ${NOTIFICATION_URL} with API key ${ERP_API_KEY.substring(0, 8)}...`);
   }
 
-  // Sin structured logging: mezcla de mensajes sin formato consistente
   console.log('Inventory sync OK:', productId, 'diff:', stockDiff, 'warehouse:', warehouseId);
 
-  res.status(200).json({
-    status: 'success',
-    message: 'Inventory synchronized',
-    productId,
-    sku,
-    stockDiff,
-    timestamp
-  });
-};
+  console.info(JSON.stringify({
+    severity: 'INFO',
+    message: 'Inventory synchronization completed successfully',
+    payload: {
+      productId,
+      sku,
+      stockDiff,
+      warehouseId,
+      timestamp
+    }
+  }));
+});
 
 // Segunda funcion en el mismo archivo (violacion de single responsibility)
 exports.generateStockReport = (req, res) => {
