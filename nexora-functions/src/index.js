@@ -17,9 +17,6 @@ const LOW_STOCK_THRESHOLD = process.env.LOW_STOCK_THRESHOLD;
 
 // 1ra generacion: recibe (req, res) como HTTP
 functions.cloudEvent('onInventorySync', (cloudEvent) => {
-
-  console.log("Cargada API KEY:", ERP_API_KEY);
-  console.log('syncInventory' , cloudEvent);
   const data = cloudEvent.data;
 
   const { productId, sku, oldStock, newStock, warehouseId } = data;
@@ -32,11 +29,17 @@ functions.cloudEvent('onInventorySync', (cloudEvent) => {
   const timestamp = new Date().toISOString();
 
   if (newStock <= LOW_STOCK_THRESHOLD) {
-    console.log(`[${timestamp}] LOW STOCK ALERT — product: ${productId}, sku: ${sku}, stock: ${newStock}`);
-    console.log(`Notifying ${NOTIFICATION_URL} with API key ${ERP_API_KEY.substring(0, 8)}...`);
+    console.warn(JSON.stringify({
+      severity: 'WARNING',
+      message: 'LOW STOCK ALERT',
+      timestamp,
+      details: { productId, sku, currentStock: newStock },
+      notification: {
+        url: NOTIFICATION_URL,
+        apiKeyHint: `${ERP_API_KEY?.substring(0, 8)}...`
+      }
+    }));
   }
-
-  console.log('Inventory sync OK:', productId, 'diff:', stockDiff, 'warehouse:', warehouseId);
 
   console.info(JSON.stringify({
     severity: 'INFO',
