@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { ApiResponse, PaginatedResponse } from '../../../core/models/api-response.model';
 
 export interface Customer {
   id: number;
@@ -21,19 +20,19 @@ export class CustomerService {
 
   constructor(private http: HttpClient) {}
 
-  getCustomers(): Observable<PaginatedResponse<Customer>> {
-    return this.http.get<PaginatedResponse<Customer>>(this.BASE_URL);
+  getCustomers(): Observable<Customer> {
+    return this.http.get<Customer>(this.BASE_URL);
   }
 
-  getCustomerById(id: number): Observable<ApiResponse<Customer>> {
-    return this.http.get<ApiResponse<Customer>>(`${this.BASE_URL}/${id}`);
+  getCustomerById(id: number): Observable<Customer> {
+    return this.http.get<Customer>(`${this.BASE_URL}/${id}`);
   }
 
-  updateCustomerTier(id: number, tier: Customer['tier']): Observable<ApiResponse<Customer>> {
-    return this.http.patch<ApiResponse<Customer>>(`${this.BASE_URL}/${id}/tier`, { tier });
+  updateCustomerTier(id: number, tier: Customer['tier']): Observable<Customer> {
+    return this.http.patch<Customer>(`${this.BASE_URL}/${id}/tier`, { tier });
   }
 
-  searchCustomers(query: string): Observable<ApiResponse<Customer[]>> {
-    return this.http.get<ApiResponse<Customer[]>>(`${this.BASE_URL}/search?q=${query}`);
+  searchCustomers(query: string): Observable<Customer[]> {
+    return this.http.get<Customer[]>(`${this.BASE_URL}/search?q=${query}`);
   }
 }
