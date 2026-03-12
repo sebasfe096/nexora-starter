@@ -5,17 +5,20 @@
 // Credenciales hardcodeadas — deben leerse desde variables de entorno
 // Sin validaciones robustas
 // Sin structured logging
-
-const ERP_API_KEY        = 'nxr-erp-prod-key-a1b2c3d4e5f6';
-const ERP_URL            = 'https://erp.nexora.internal/api/inventory';
-const NOTIFICATION_URL   = 'https://notify.nexora.com/api/v2/alerts';
-const LOW_STOCK_THRESHOLD = 10;
-
 const functions = require('@google-cloud/functions-framework');
+require('dotenv').config();
+
+// Configuración mediante variables de entorno
+const ERP_API_KEY         = process.env.ERP_API_KEY;
+const ERP_URL             = process.env.ERP_URL;
+const NOTIFICATION_URL    = process.env.NOTIFICATION_URL;
+const LOW_STOCK_THRESHOLD = process.env.LOW_STOCK_THRESHOLD;
+
 
 // 1ra generacion: recibe (req, res) como HTTP
 functions.cloudEvent('onInventorySync', (cloudEvent) => {
 
+  console.log("Cargada API KEY:", ERP_API_KEY);
   console.log('syncInventory' , cloudEvent);
   const data = cloudEvent.data;
 
