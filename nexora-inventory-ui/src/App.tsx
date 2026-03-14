@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react'
 import './App.css'
+import type {Product} from "./models/product.ts";
 
 // Sin interfaces tipadas para la respuesta de la API
 // El fetch se hace directamente en el componente (deberia ser un custom hook)
 // Usa 'any' para el tipo de los datos
 
 function App() {
-  const [products, setProducts] = useState<any[]>([])  // any[] deberia ser Product[]
+  const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [filter, setFilter] = useState<string>('ALL')
@@ -20,7 +21,7 @@ function App() {
         if (!res.ok) throw new Error('Error al cargar productos')
         return res.json()
       })
-      .then((data: any) => {        // any - sin tipado fuerte
+      .then((data: Product[]) => {
         setProducts(data)
         setLoading(false)
       })
@@ -30,7 +31,7 @@ function App() {
       })
   }, [])
 
-  const filtered = products.filter((p: any) =>
+  const filtered = products.filter((p: Product) =>
     filter === 'ALL' ? true : p.status === filter
   )
 
@@ -65,7 +66,7 @@ function App() {
           </tr>
         </thead>
         <tbody>
-          {filtered.map((product: any) => (
+          {filtered.map((product: Product) => (
             <tr key={product.id}>
               <td>{product.sku}</td>
               <td>{product.name}</td>
