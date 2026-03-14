@@ -1,34 +1,49 @@
 package com.nexora.api.model;
 
+import com.nexora.api.enums.ProductStatus;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-// Sin anotaciones de validacion (@NotNull, @Size, etc.)
-// El status deberia ser un Enum, no un String
 @Entity
 @Table(name = "products")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true, nullable = false)
     private String sku;
+
+    @Size(min = 3, max = 100)
     private String name;
+
+    @Size(max = 500)
     private String description;
+
+    @Min(1)
     private BigDecimal price;
+
+    @Min(1)
     private Integer stock;
+
     private String category;
-    private String status; // Deberia ser un Enum: ACTIVE, INACTIVE, DISCONTINUED
 
-    @Column(name = "created_at")
+    private String status;
+
     private LocalDateTime createdAt;
-
-    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-
-    public Product() {}
 
     public Product(String sku, String name, String description, BigDecimal price,
                    Integer stock, String category, String status) {
@@ -42,25 +57,4 @@ public class Product {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
-
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public String getSku() { return sku; }
-    public void setSku(String sku) { this.sku = sku; }
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
-    public BigDecimal getPrice() { return price; }
-    public void setPrice(BigDecimal price) { this.price = price; }
-    public Integer getStock() { return stock; }
-    public void setStock(Integer stock) { this.stock = stock; }
-    public String getCategory() { return category; }
-    public void setCategory(String category) { this.category = category; }
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
-    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
 }
