@@ -1,0 +1,99 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: back-nexora-api
+  name: bback-nexora-api
+  namespace: <NS>
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: back-nexora-api
+  template:
+    metadata:
+      labels:
+        app: back-nexora-api
+    spec:
+      containers:
+      - env:
+        - name: TZ
+          value: America/Bogota
+        envFrom:
+        - configMapRef:
+              name: config-common-service
+        - configMapRef:
+            name: config-nexora-api
+        - secretRef:
+            name: secret-common-service
+        - secretRef:
+            name: secret-nexora-api
+        image: <IMG>
+        name: back-nexora-api
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        readinessProbe:
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 10
+        livenessProbe:
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 10
+        resources:
+          limits:
+            cpu: 400m
+            memory: 400Mi
+          requests:
+            cpu: <resources.requests.cpu>
+            memory: <resources.requests.memory>
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: srv-back-nexora-api
+  name: srv-back-nexora-api
+  namespace: <NS>
+spec:
+  ports:
+  - port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: back-nexora-api
+  type: ClusterIP
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: back-nexora-api-hpa
+  namespace: <NS>
+spec:
+  maxReplicas: 1
+  minReplicas: <minReplicas>
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: back-nexora-api
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: <targetCPUUtilizationPercentage>
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: <targetCPUUtilizationPercentage>
+
