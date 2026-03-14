@@ -1,6 +1,5 @@
-import { useState, useEffect } from 'react';
+import {useState, useEffect, useCallback} from 'react';
 import type {Product} from "../models/product.ts";
-
 
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -9,22 +8,24 @@ export const useProducts = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
+    const fetchProducts = useCallback(async () => {
         setLoading(true);
-        fetch(`${API_BASE_URL}/products`)
-            .then(res => {
-                if (!res.ok) throw new Error('Error al cargar productos');
-                return res.json();
-            })
-            .then((data: Product[]) => {
-                setProducts(data);
-                setLoading(false);
-            })
-            .catch(err => {
-                setError(err.message);
-                setLoading(false);
-            });
+        setError(null);
+        try {
+            const res = await fetch(`${API_BASE_URL}/products`);
+            if (!res.ok) throw new Error('Error al cargar productos');
+            const data: Product[] = await res.json();
+            setProducts(data);
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Error desconocido');
+        } finally {
+            setLoading(false);
+        }
     }, []);
 
-    return { products, loading, error };
+    useEffect(() => {
+        fetchProducts();
+    }, [fetchProducts]);
+
+    return { products, loading, error, refetch: fetchProducts };
 };
