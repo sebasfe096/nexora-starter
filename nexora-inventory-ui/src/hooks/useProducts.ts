@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import type {Product} from "../models/product.ts";
 
+
+const API_BASE_URL = import.meta.env.VITE_API_URL;
+
 export const useProducts = () => {
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(false);
@@ -8,7 +11,7 @@ export const useProducts = () => {
 
     useEffect(() => {
         setLoading(true);
-        fetch('http://localhost:8082/api/products')
+        fetch(`${API_BASE_URL}/products`)
             .then(res => {
                 if (!res.ok) throw new Error('Error al cargar productos');
                 return res.json();

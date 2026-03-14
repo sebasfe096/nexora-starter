@@ -3,10 +3,6 @@ import './App.css'
 import type {Product, ProductStatus} from "./models/product.ts";
 import {useProducts} from "./hooks/useProducts.ts";
 
-// Sin interfaces tipadas para la respuesta de la API
-// El fetch se hace directamente en el componente (deberia ser un custom hook)
-// Usa 'any' para el tipo de los datos
-
 function App() {
   const { products, loading, error } = useProducts();
   const [filter, setFilter] = useState<ProductStatus | 'ALL'>('ALL');
