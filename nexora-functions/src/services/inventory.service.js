@@ -1,21 +1,21 @@
+'use strict';
 
-const functions = require('@google-cloud/functions-framework');
 const ERP_API_KEY         = process.env.ERP_API_KEY;
-const ERP_URL             = process.env.ERP_URL;
+const LOW_STOCK_THRESHOLD = parseInt(process.env.LOW_STOCK_THRESHOLD);
 const NOTIFICATION_URL    = process.env.NOTIFICATION_URL;
-const LOW_STOCK_THRESHOLD = process.env.LOW_STOCK_THRESHOLD;
 
-functions.cloudEvent('onInventorySync', (cloudEvent) => {
-    const data = cloudEvent.data;
 
+exports.syncInventoryData = async (data) => {
     const { productId, sku, oldStock, newStock, warehouseId } = data;
 
-    if (!data.productId || data.newStock === undefined || data.newStock === null) {
+    console.info(JSON.stringify({data: data}))
+    if (!productId || newStock === undefined || newStock === null) {
         throw new Error('Missing required fields: productId, newStock');
     }
 
     const stockDiff = newStock - (oldStock || 0);
     const timestamp = new Date().toISOString();
+    let alertSent = false;
 
     if (newStock <= LOW_STOCK_THRESHOLD) {
         console.warn(JSON.stringify({
@@ -28,17 +28,15 @@ functions.cloudEvent('onInventorySync', (cloudEvent) => {
                 apiKeyHint: `${ERP_API_KEY?.substring(0, 8)}...`
             }
         }));
+        alertSent = true;
     }
 
-    console.info(JSON.stringify({
-        severity: 'INFO',
-        message: 'Inventory synchronization completed successfully',
-        payload: {
-            productId,
-            sku,
-            stockDiff,
-            warehouseId,
-            timestamp
-        }
-    }));
-});
+    return {
+        productId,
+        sku,
+        stockDiff,
+        warehouseId,
+        timestamp,
+        alertSent
+    };
+};
