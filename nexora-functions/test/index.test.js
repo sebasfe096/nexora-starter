@@ -1,35 +1,50 @@
 'use strict';
 
+const { handleInventoryUpdate } = require('../src/events/inventory.handler');
+
 describe('onInventorySync (Integration Test)', () => {
-  let inventoryHandler;
 
   beforeEach(() => {
-    jest.resetModules();
-    const functions = require('@google-cloud/functions-framework');
-    jest.spyOn(functions, 'cloudEvent').mockImplementation((name, handler) => {
-      inventoryHandler = handler;
-    });
-    require('../src/inventoryService');
+    jest.clearAllMocks();
+    process.env.LOW_STOCK_THRESHOLD = '10';
   });
 
-  it('should log info on successful synchronization', () => {
+  it('should log info on successful synchronization', async () => {
     const infoSpy = jest.spyOn(console, 'info').mockImplementation();
 
     const validEvent = {
-      data: { productId: 'P1', newStock: 50, oldStock: 65, sku: 's45665', warehouseId: 15 },
+      data: {
+        productId: 'P1',
+        newStock: 50,
+        oldStock: 65,
+        sku: 's45665',
+        warehouseId: 15
+      },
     };
 
-    inventoryHandler(validEvent);
-    expect(infoSpy).toHaveBeenCalled();
+    await handleInventoryUpdate(validEvent);
+
+    expect(infoSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Inventory event processed successfully')
+    );
+
     infoSpy.mockRestore();
   });
 
-  it('should throw "Missing required fields" when data is incomplete', () => {
+  it('should log error when data is incomplete', async () => {
+    const errorSpy = jest.spyOn(console, 'error').mockImplementation();
 
     const invalidEvent = {
       data: { productId: 'P1' }
     };
 
-    expect(() => inventoryHandler(invalidEvent)).toThrow('Missing required fields');
+    await handleInventoryUpdate(invalidEvent);
+
+    expect(errorSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Error processing inventory event:'),
+        expect.any(Error)
+    );
+
+    errorSpy.mockRestore();
   });
 });
