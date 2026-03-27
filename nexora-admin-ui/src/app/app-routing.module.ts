@@ -4,26 +4,26 @@ import { RouterModule, Routes } from '@angular/router';
 const routes: Routes = [
   {
     path: 'products',
-    loadChildren: () => import('./features/products/products.module').then(m => m.ProductsModule)
+    loadComponent: () => import('./features/products/products.component').then(m => m.ProductsComponent)
   },
   {
     path: 'orders',
-    loadChildren: () => import('./features/orders/orders.module').then(m => m.OrdersModule)
+    loadComponent: () => import('./features/orders/orders.component').then(m => m.OrdersComponent)
   },
   {
     path: 'customers',
-    loadChildren: () => import('./features/customers/customers.module').then(m => m.CustomersModule)
+    loadComponent: () => import('./features/customers/customers.component').then(m => m.CustomersComponent)
   },
   {
     path: 'inventory',
-    loadChildren: () => import('./features/inventory/inventory.module').then(m => m.InventoryModule)
+    loadComponent: () => import('./features/inventory/inventory.component').then(m => m.InventoryComponent)
   },
   {
     path: 'login',
-    loadChildren: () => import('./features/auth/auth.module').then(m => m.AuthModule)
+    loadComponent: () => import('./core/auth/auth.component').then(m => m.AuthComponent)
   },
-  { path: '', redirectTo: 'products', pathMatch: 'full' },
-  { path: '**', redirectTo: 'products' }
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  { path: '**', redirectTo: 'login' }
 ];
 
 @NgModule({
